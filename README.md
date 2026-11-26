@@ -10,16 +10,31 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 - [x] HTTP adapter (FastAPI)
 - [x] Containerization
 - [x] Persistence (PostgreSQL)
-- [ ] Local stack (docker-compose)
+- [x] Local stack (docker-compose)
 
-## Running locally
+## Quick start (recommended)
+
+```bash
+docker compose up --build
+```
+
+API: http://127.0.0.1:8000  
+Docs: http://127.0.0.1:8000/docs
+
+Stop and clean:
+
+```bash
+docker compose down -v
+```
+
+## Running locally (without Docker)
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Start a PostgreSQL (example with Docker)
+# Start PostgreSQL (example)
 docker run --rm -d \
   --name librereserva-db \
   -e POSTGRES_USER=librereserva \
@@ -28,26 +43,11 @@ docker run --rm -d \
   -p 5432:5432 \
   postgres:16-alpine
 
-# Optional: export DATABASE_URL if different from the default
+# Optional override
 # export DATABASE_URL=postgresql://librereserva:librereserva@localhost:5432/librereserva
 
-# Run tests (domain only; persistence requires a live DB)
 python -m unittest discover -s tests -v
-
-# Start the API
 uvicorn app.main:app --reload
-```
-
-API: http://127.0.0.1:8000  
-Docs: http://127.0.0.1:8000/docs
-
-## Running with Docker (API only)
-
-```bash
-docker build -t librereserva .
-docker run --rm -p 8000:8000 \
-  -e DATABASE_URL=postgresql://librereserva:librereserva@host.docker.internal:5432/librereserva \
-  librereserva
 ```
 
 ## Manual checks
