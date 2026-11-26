@@ -9,17 +9,29 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 - [x] Pure domain model + unit tests
 - [x] HTTP adapter (FastAPI)
 - [x] Containerization
-- [ ] Persistence (PostgreSQL)
+- [x] Persistence (PostgreSQL)
 - [ ] Local stack (docker-compose)
 
 ## Running locally
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run tests
+# Start a PostgreSQL (example with Docker)
+docker run --rm -d \
+  --name librereserva-db \
+  -e POSTGRES_USER=librereserva \
+  -e POSTGRES_PASSWORD=librereserva \
+  -e POSTGRES_DB=librereserva \
+  -p 5432:5432 \
+  postgres:16-alpine
+
+# Optional: export DATABASE_URL if different from the default
+# export DATABASE_URL=postgresql://librereserva:librereserva@localhost:5432/librereserva
+
+# Run tests (domain only; persistence requires a live DB)
 python -m unittest discover -s tests -v
 
 # Start the API
@@ -29,11 +41,13 @@ uvicorn app.main:app --reload
 API: http://127.0.0.1:8000  
 Docs: http://127.0.0.1:8000/docs
 
-## Running with Docker
+## Running with Docker (API only)
 
 ```bash
 docker build -t librereserva .
-docker run --rm -p 8000:8000 librereserva
+docker run --rm -p 8000:8000 \
+  -e DATABASE_URL=postgresql://librereserva:librereserva@host.docker.internal:5432/librereserva \
+  librereserva
 ```
 
 ## Manual checks

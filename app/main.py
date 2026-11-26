@@ -5,10 +5,11 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 
-from .domain import Agenda, Intervalo, IntervaloInvalido, IntervaloOcupado
+from .domain import Intervalo, IntervaloInvalido, IntervaloOcupado
+from .persistence import PostgresAgenda
 
-app = FastAPI(title="LibreReserva", version="0.1.0")
-agenda = Agenda()
+app = FastAPI(title="LibreReserva", version="0.2.0")
+agenda = PostgresAgenda()
 
 
 class ReservaEntrada(BaseModel):
