@@ -12,6 +12,7 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 - [x] Persistence (PostgreSQL)
 - [x] Local stack (docker-compose)
 - [x] Basic architecture documentation (C4 + ADR)
+- [x] HTTP contract tests
 
 ## Quick start (recommended)
 
@@ -33,6 +34,17 @@ docker compose down -v
 - [C4 diagrams](docs/c4.md)
 - [ADR 0001 – Pure domain with PostgreSQL](docs/adr/0001-pure-domain-with-postgres.md)
 
+## Running tests
+
+```bash
+# Domain unit tests (no DB required)
+python -m unittest discover -s tests -v
+
+# Contract tests need a running PostgreSQL (or docker compose up)
+pip install -r requirements-dev.txt
+python -m unittest tests.test_api -v
+```
+
 ## Running locally (without Docker)
 
 ```bash
@@ -40,7 +52,6 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Start PostgreSQL (example)
 docker run --rm -d \
   --name librereserva-db \
   -e POSTGRES_USER=librereserva \
@@ -49,7 +60,6 @@ docker run --rm -d \
   -p 5432:5432 \
   postgres:16-alpine
 
-python -m unittest discover -s tests -v
 uvicorn app.main:app --reload
 ```
 
