@@ -13,6 +13,7 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 - [x] Local stack (docker-compose)
 - [x] Basic architecture documentation (C4 + ADR)
 - [x] HTTP contract tests
+- [x] Minimal observability (structured logs + richer health)
 
 ## Quick start (recommended)
 
@@ -40,7 +41,7 @@ docker compose down -v
 # Domain unit tests (no DB required)
 python -m unittest discover -s tests -v
 
-# Contract tests need a running PostgreSQL (or docker compose up)
+# Contract tests need a running PostgreSQL
 pip install -r requirements-dev.txt
 python -m unittest tests.test_api -v
 ```
@@ -67,6 +68,7 @@ uvicorn app.main:app --reload
 
 ```bash
 curl -fsS http://127.0.0.1:8000/salud/viva
+curl -fsS http://127.0.0.1:8000/salud/lista
 
 curl -i -X POST http://127.0.0.1:8000/reservas \
   -H 'content-type: application/json' \
@@ -76,3 +78,5 @@ curl -fsS http://127.0.0.1:8000/reservas
 ```
 
 A second POST with the same interval must return **409**. An inverted interval must return **422**.
+
+Logs appear in JSON-like format on stdout.

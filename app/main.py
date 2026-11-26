@@ -1,5 +1,6 @@
 """FastAPI HTTP adapter for LibreReserva."""
 
+import logging
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, status
@@ -8,7 +9,13 @@ from pydantic import BaseModel, ConfigDict
 from .domain import Intervalo, IntervaloInvalido, IntervaloOcupado
 from .persistence import PostgresAgenda
 
-app = FastAPI(title="LibreReserva", version="0.2.0")
+logging.basicConfig(
+    level=logging.INFO,
+    format='{"time":"%(asctime)s","level":"%(levelname)s","msg":"%(message)s"}',
+)
+logger = logging.getLogger("librereserva")
+
+app = FastAPI(title="LibreReserva", version="0.3.0")
 agenda = PostgresAgenda()
 
 
@@ -30,7 +37,12 @@ def viva() -> dict[str, str]:
 
 @app.get("/salud/lista")
 def lista() -> dict[str, str]:
-    return {"estado": "lista"}
+    try:
+        agenda.listar()
+        return {"estado": "lista", "base_datos": "ok"}
+    except Exception as exc:
+        logger.error("database health check failed: %s", exc)
+        raise HTTPException(status_code=503, detail="database unavailable") from exc
 
 
 @app.get("/reservas", response_model=list[ReservaSalida])
@@ -57,9 +69,16 @@ def crear_reserva(entrada: ReservaEntrada) -> ReservaSalida:
             entrada.recurso,
             Intervalo(entrada.inicio, entrada.fin),
         )
+        logger.info(
+            "reservation created id=%s resource=%s",
+            reserva.id,
+            reserva.recurso,
+        )
     except IntervaloInvalido as exc:
+        logger.warning("invalid interval: %s", exc)
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except IntervaloOcupado as exc:
+        logger.warning("conflict: %s", exc)
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     return ReservaSalida(
         id=reserva.id,
