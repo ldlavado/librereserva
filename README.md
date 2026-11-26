@@ -8,7 +8,7 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 
 - [x] Pure domain model + unit tests
 - [x] HTTP adapter (FastAPI)
-- [ ] Containerization
+- [x] Containerization
 - [ ] Persistence (PostgreSQL)
 - [ ] Local stack (docker-compose)
 
@@ -28,6 +28,13 @@ uvicorn app.main:app --reload
 
 API: http://127.0.0.1:8000  
 Docs: http://127.0.0.1:8000/docs
+
+## Running with Docker
+
+```bash
+docker build -t librereserva .
+docker run --rm -p 8000:8000 librereserva
+```
 
 ## Manual checks
 
