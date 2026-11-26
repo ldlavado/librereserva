@@ -11,6 +11,7 @@ The domain core is independent of infrastructure. Adapters (HTTP, persistence, e
 - [x] Containerization
 - [x] Persistence (PostgreSQL)
 - [x] Local stack (docker-compose)
+- [x] Basic architecture documentation (C4 + ADR)
 
 ## Quick start (recommended)
 
@@ -27,6 +28,11 @@ Stop and clean:
 docker compose down -v
 ```
 
+## Architecture
+
+- [C4 diagrams](docs/c4.md)
+- [ADR 0001 – Pure domain with PostgreSQL](docs/adr/0001-pure-domain-with-postgres.md)
+
 ## Running locally (without Docker)
 
 ```bash
@@ -42,9 +48,6 @@ docker run --rm -d \
   -e POSTGRES_DB=librereserva \
   -p 5432:5432 \
   postgres:16-alpine
-
-# Optional override
-# export DATABASE_URL=postgresql://librereserva:librereserva@localhost:5432/librereserva
 
 python -m unittest discover -s tests -v
 uvicorn app.main:app --reload
